@@ -1387,6 +1387,7 @@ MonoBehaviour:
   brakingForce: 0
   WheelRadius: 0.375
   acceleratorInput: 0
+  rollingFriction: 0.05
   springArrow: {fileID: 2608388638025798678}
   slipArrow: {fileID: 4950720870016841206}
   slipCorrectionArrow: {fileID: 2758248715739635716}
@@ -1396,10 +1397,22 @@ MonoBehaviour:
   accelerationScale: 0
   slipPercentage: 0
   slipVelocity: 0
+  slipVelocityVector: {x: 0, y: 0, z: 0}
+  slipCorrectionForce: 0
   rideVelocity: 0
+  rideVelocityVector: {x: 0, y: 0, z: 0}
+  speedRatio: 0
+  torque: 0
+  topSpeed: 0
   absSlip: 0
   absRide: 0
   tractionResult: 0
+  springForceVector: {x: 0, y: 0, z: 0}
+  driveForceVector: {x: 0, y: 0, z: 0}
+  slipCorrectionForceVector: {x: 0, y: 0, z: 0}
+  powerDir: {x: 0, y: 0, z: 0}
+  springDir: {x: 0, y: 0, z: 0}
+  slipCorrectionMultiplier: 1
   didHit: 0
 --- !u!1 &8169692991382443096
 GameObject:

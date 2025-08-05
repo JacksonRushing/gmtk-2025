@@ -11,6 +11,8 @@ public class Suspension : MonoBehaviour
     public float DampingForce;
     public float Offset;
 
+
+
     public float maxExtension = 1.0f;
     public float accelerationForce;
     public float brakingForce;
@@ -19,8 +21,12 @@ public class Suspension : MonoBehaviour
 
     public int acceleratorInput;
 
+    public float rollingFriction = 0.05f;
+
     private AnimationCurve tractionCurve;
     private AnimationCurve acceleratorCurve;
+
+    private AnimationCurve torqueCurve;
 
     //debug
 
@@ -32,13 +38,26 @@ public class Suspension : MonoBehaviour
     public float springScale, slipScale, accelerationScale;
     public float slipPercentage;
     public float slipVelocity;
+
+    public Vector3 slipVelocityVector;
     public float slipCorrectionForce;
     public float rideVelocity;
+    public Vector3 rideVelocityVector;
+
+    public float speedRatio;
+    public float torque;
+
+    public float topSpeed;
 
     public float absSlip;
     public float absRide;
 
     public float tractionResult;
+
+    public Vector3 springForceVector, driveForceVector, slipCorrectionForceVector;
+    public Vector3 powerDir, springDir;
+
+    public float slipCorrectionMultiplier = 1.0f;
 
     public bool didHit;
 
@@ -50,8 +69,8 @@ public class Suspension : MonoBehaviour
 
     void FixedUpdate()
     {
-        Vector3 powerDir = this.transform.forward;
-        Vector3 springDir = this.transform.up;
+        powerDir = this.transform.forward;
+        springDir = this.transform.up;
         Vector3 wheelWorldVelocity = carRB.GetPointVelocity(this.transform.position);
 
         // suspension.Start = new Vector3(0, -RestingDistance, 0);
@@ -71,6 +90,7 @@ public class Suspension : MonoBehaviour
         // suspension.End = Vector3.zero;
         if (didHit)
         {
+            springDir = hit.normal;
             // suspension.End = new Vector3(0, -hit.distance + WheelRadius, 0);
             // hitPos.SetActive(true);
             // hitPos.transform.localPosition = new Vector3(0, -hit.distance, 0);
@@ -89,7 +109,8 @@ public class Suspension : MonoBehaviour
                 force *= suctionForceRatio;
             }
 
-            carRB.AddForceAtPosition(force * springDir, this.transform.position);
+            springForceVector = force * springDir;
+            carRB.AddForceAtPosition(springForceVector, this.transform.position);
             springArrow.end = force * springDir * springScale;
             Debug.DrawLine(this.transform.position, this.transform.position + (force * springDir * springScale), Color.green);
 
@@ -97,13 +118,22 @@ public class Suspension : MonoBehaviour
             {
                 if (acceleratorInput == 1)
                 {
-                    carRB.AddForceAtPosition(accelerationForce * powerDir, this.transform.position);
-                    accelerationArrow.end = accelerationForce * powerDir * accelerationScale;
-                    Debug.DrawLine(this.transform.position, this.transform.position + (accelerationForce * powerDir * accelerationScale));
+                    speedRatio = wheelWorldVelocity.magnitude / topSpeed;
+                    torque = torqueCurve.Evaluate(speedRatio);
+                    if (speedRatio > 1)
+                    {
+                        torque = 0;
+                    }
+
+                    driveForceVector = accelerationForce * powerDir * torque;
+                    carRB.AddForceAtPosition(driveForceVector, this.transform.position);
+                    accelerationArrow.end = accelerationForce * powerDir * torque * accelerationScale;
+                    Debug.DrawLine(this.transform.position, this.transform.position + (accelerationForce * torque * powerDir * accelerationScale), Color.blue);
                 }
                 else
                 {
-                    carRB.AddForceAtPosition(brakingForce * -wheelWorldVelocity.normalized, this.transform.position);
+                    driveForceVector = brakingForce * -wheelWorldVelocity.normalized;
+                    carRB.AddForceAtPosition(driveForceVector, this.transform.position);
                     accelerationArrow.end = brakingForce * -wheelWorldVelocity.normalized * accelerationScale;
                     Debug.DrawLine(this.transform.position, this.transform.position + (brakingForce * -wheelWorldVelocity.normalized * accelerationScale), Color.blue);
                 }
@@ -116,7 +146,14 @@ public class Suspension : MonoBehaviour
             slipVelocity = Vector3.Dot(wheelWorldVelocity, this.transform.right);
             rideVelocity = Vector3.Dot(wheelWorldVelocity, this.transform.forward);
 
-            Debug.DrawLine(this.transform.position, this.transform.position + wheelWorldVelocity, Color.cyan);
+
+
+
+            // slipVelocity = slipVelocityVector.magnitude;
+            // rideVelocity = rideVelocityVector.magnitude;
+
+
+            Debug.DrawLine(this.transform.position, this.transform.position + wheelWorldVelocity, Color.yellow);
 
             absSlip = Mathf.Abs(slipVelocity);
             absRide = Mathf.Abs(rideVelocity);
@@ -124,19 +161,33 @@ public class Suspension : MonoBehaviour
             //get percentage of velocity that is slip
             slipPercentage = absSlip / (absSlip + absRide);
             tractionResult = tractionCurve.Evaluate(slipPercentage);
+            //tractionResult = 1;
 
-            slipCorrectionForce = -slipVelocity * tractionResult * carRB.mass;
 
-            carRB.AddForceAtPosition(slipCorrectionForce * this.transform.right, this.transform.position);
+
+
+            slipCorrectionForceVector = -this.transform.right * slipVelocity * tractionResult * ((carRB.mass * -Physics.gravity.y) / 4.0f);
+
+            //slipCorrectionForce = -slipVelocity * tractionResult * carRB.mass;
+
+            //slipCorrectionForceVector = slipCorrectionForce * this.transform.right * slipCorrectionMultiplier;
+            //slipCorrectionForceVector = -slipVelocityVector * carRB.mass * tractionResult * slipCorrectionMultiplier;
+            //slipCorrectionForceVector = -slipVelocityVector;
+            carRB.AddForceAtPosition(slipCorrectionForceVector, this.transform.position);
 
             slipArrow.end = slipVelocity * this.transform.right * slipScale;
             slipCorrectionArrow.start = this.transform.position;
             slipCorrectionArrow.end = slipCorrectionForce * this.transform.right * slipScale;
 
-            Vector3 slipEnd = this.transform.position + (slipVelocity * this.transform.right * slipScale);
+            Vector3 slipEnd = this.transform.position + this.transform.right * slipVelocity;
             Debug.DrawLine(this.transform.position, slipEnd, Color.red);
-            Debug.DrawLine(this.transform.position + new Vector3(0, 0.1f, 0), this.transform.position + (slipCorrectionForce * this.transform.right * slipScale) + new Vector3(0, 0.1f, 0), Color.magenta);
+            Debug.DrawLine(this.transform.position + new Vector3(0, 0.1f, 0), this.transform.position + (slipCorrectionForceVector) + new Vector3(0, 0.1f, 0), Color.magenta);
 
+            //rolling friction
+            float forwardVelocity = Vector3.Dot(this.transform.forward, wheelWorldVelocity);
+
+            Vector3 frictionVector = -forwardVelocity * this.transform.forward * rollingFriction * ((carRB.mass * -Physics.gravity.y) / 4.0f);
+            carRB.AddForceAtPosition(frictionVector, this.transform.position);
         }
         // else
         // {
@@ -154,5 +205,10 @@ public class Suspension : MonoBehaviour
     public void setTractionCurve(AnimationCurve curve)
     {
         tractionCurve = curve;
+    }
+
+    public void setTorqueCurve(AnimationCurve curve)
+    {
+        torqueCurve = curve;
     }
 }

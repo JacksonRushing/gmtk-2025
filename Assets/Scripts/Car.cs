@@ -10,6 +10,9 @@ public class Car : MonoBehaviour
         RWD,
         AWD
     }
+
+    public float topSpeed;
+    [SerializeField] private float currentSpeed;
     public float carWidth;
     public Drivetrain drivetrain;
     public Suspension FrontLeft, FrontRight;
@@ -21,8 +24,12 @@ public class Car : MonoBehaviour
     public float steeringSpeed = 30;
     public float centeringSpeed = 20;
 
-    public AnimationCurve frontTraction;
-    public AnimationCurve rearTraction;
+    public CurveAsset torqueCurve;
+
+    public CurveAsset frontTraction;
+    public CurveAsset rearTraction;
+
+
 
     public float RestingDistance;
     public float SpringStrength;
@@ -33,6 +40,7 @@ public class Car : MonoBehaviour
     public float accelerationForce;
     public float brakingForce;
 
+    public float rollingFriction = 0.05f;
     public float WheelRadius = 0.375f;
     public float WheelWidth = 0.2f;
 
@@ -87,6 +95,8 @@ public class Car : MonoBehaviour
 
         updateRigidBody();
 
+        currentSpeed = rb.linearVelocity.magnitude;
+
     }
 
     void updateRigidBody()
@@ -109,6 +119,8 @@ public class Car : MonoBehaviour
             wheel.maxExtension = maxExtension;
             wheel.accelerationForce = accelerationForce;
             wheel.brakingForce = brakingForce;
+            wheel.topSpeed = topSpeed;
+            wheel.rollingFriction = rollingFriction;
             wheel.WheelRadius = WheelRadius;
 
             wheel.wheel.radius = WheelRadius;
@@ -149,11 +161,16 @@ public class Car : MonoBehaviour
 
         wheels = new List<Suspension> { FrontLeft, FrontRight, RearLeft, RearRight };
 
-        FrontLeft.setTractionCurve(frontTraction);
-        FrontRight.setTractionCurve(frontTraction);
+        FrontLeft.setTractionCurve(frontTraction.curve);
+        FrontRight.setTractionCurve(frontTraction.curve);
 
-        RearLeft.setTractionCurve(rearTraction);
-        RearRight.setTractionCurve(rearTraction);
+        RearLeft.setTractionCurve(rearTraction.curve);
+        RearRight.setTractionCurve(rearTraction.curve);
+
+        FrontLeft.setTorqueCurve(torqueCurve.curve);
+        FrontRight.setTorqueCurve(torqueCurve.curve);
+        RearLeft.setTorqueCurve(torqueCurve.curve);
+        RearRight.setTorqueCurve(torqueCurve.curve);
     }
 
     void Reset()
@@ -163,5 +180,10 @@ public class Car : MonoBehaviour
 
         this.transform.position = initialPosition;
         this.transform.eulerAngles = initialRotation;
+    }
+
+    public float getCurrentSpeed()
+    {
+        return currentSpeed;
     }
 }
