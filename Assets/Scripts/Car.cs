@@ -24,10 +24,14 @@ public class Car : MonoBehaviour
     public float steeringSpeed = 30;
     public float centeringSpeed = 20;
 
+    public float steeringSpeedRatio;
+
     public CurveAsset torqueCurve;
 
     public CurveAsset frontTraction;
     public CurveAsset rearTraction;
+
+    public CurveAsset steeringCurve;
 
 
 
@@ -67,7 +71,7 @@ public class Car : MonoBehaviour
         if (Input.GetKey(KeyCode.UpArrow)) { acceleratorInput = 1; }
         if (Input.GetKey(KeyCode.DownArrow)) { acceleratorInput = -1; }
 
-        updateSteeringAngle(steeringInput);
+
 
         if (acceleratorInput == 1)
         {
@@ -90,12 +94,15 @@ public class Car : MonoBehaviour
             RearRight.acceleratorInput = acceleratorInput;
         }
 
+        currentSpeed = rb.linearVelocity.magnitude;
+
+        updateSteeringAngle(steeringInput);
 
         broadcastSuspensionParameters();
 
         updateRigidBody();
 
-        currentSpeed = rb.linearVelocity.magnitude;
+
 
     }
 
@@ -130,13 +137,14 @@ public class Car : MonoBehaviour
 
     void updateSteeringAngle(int input)
     {
-        currentSteeringAngle += steeringSpeed * input * Time.deltaTime;
+        steeringSpeedRatio = steeringCurve.curve.Evaluate(currentSpeed / topSpeed);
+        currentSteeringAngle += steeringSpeed * steeringSpeedRatio * input * Time.deltaTime;
 
         if (input == 0 && currentSteeringAngle != 0)
         {
             int previousSign = Math.Sign(currentSteeringAngle);
 
-            currentSteeringAngle += -Mathf.Sign(currentSteeringAngle) * centeringSpeed * Time.deltaTime;
+            currentSteeringAngle += -Mathf.Sign(currentSteeringAngle) * centeringSpeed * steeringSpeedRatio * Time.deltaTime;
 
             if (Math.Sign(currentSteeringAngle) != previousSign)
             {

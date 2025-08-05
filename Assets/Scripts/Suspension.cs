@@ -24,9 +24,9 @@ public class Suspension : MonoBehaviour
     public float rollingFriction = 0.05f;
 
     private AnimationCurve tractionCurve;
-    private AnimationCurve acceleratorCurve;
 
     private AnimationCurve torqueCurve;
+
 
     //debug
 
