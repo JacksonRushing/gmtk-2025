@@ -11,6 +11,8 @@ public class Car : MonoBehaviour
         AWD
     }
 
+    public Anchor closestAnchor;
+
     public float topSpeed;
     [SerializeField] private float currentSpeed;
     public float carWidth;
@@ -193,5 +195,10 @@ public class Car : MonoBehaviour
     public float getCurrentSpeed()
     {
         return currentSpeed;
+    }
+
+    public Vector3 getVelocity()
+    {
+        return rb.linearVelocity;
     }
 }

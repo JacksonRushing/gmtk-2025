@@ -2,15 +2,20 @@ using UnityEngine;
 
 public class Anchor : MonoBehaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        
-    }
+    public bool highlighted;
+
+    [SerializeField] private GameObject highlight;
+    [SerializeField] private Rigidbody rigidbody;
+
 
     // Update is called once per frame
     void Update()
     {
-        
+        highlight.SetActive(highlighted);
+    }
+
+    public Rigidbody GetRigidbody()
+    {
+        return rigidbody;
     }
 }

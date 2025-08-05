@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6afd4c3c02f4344f894824b5f15fdbb9, type: 3}
-  m_Name: TractionCurve2
+  m_Name: TractionCurveRear
   m_EditorClassIdentifier: 
   curve:
     serializedVersion: 2
@@ -18,15 +18,15 @@ MonoBehaviour:
     - serializedVersion: 3
       time: 0
       value: 0.8
-      inSlope: -2.121212
-      outSlope: -2.121212
+      inSlope: -1.4631541
+      outSlope: -1.4631541
       tangentMode: 34
       weightedMode: 0
       inWeight: 0
       outWeight: 0.33333334
     - serializedVersion: 3
-      time: 0.33
-      value: 0.1
+      time: 0.30916667
+      value: 0.34764153
       inSlope: 0
       outSlope: 0
       tangentMode: 0
@@ -35,7 +35,7 @@ MonoBehaviour:
       outWeight: 0.92993826
     - serializedVersion: 3
       time: 1
-      value: 0.1
+      value: 0.34764153
       inSlope: -0.009006833
       outSlope: 0.16112144
       tangentMode: 1
