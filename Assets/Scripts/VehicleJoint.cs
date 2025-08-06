@@ -6,9 +6,10 @@ public class VehicleJoint : MonoBehaviour
     public Rigidbody vehicle;
     public float width = 5;
     public float strength = 10;
+    public bool debugHold;
 
     [SerializeField] private Anchor anchor;
-    [SerializeField] private SpringJoint joint;
+    [SerializeField] private Joint joint;
     [SerializeField] private TrackController trackController;
     [SerializeField] private Car car;
 
@@ -29,7 +30,7 @@ public class VehicleJoint : MonoBehaviour
         }
         else
         {
-            if (connected)
+            if (connected && !debugHold)
             {
                 connected = false;
                 disconnect();
@@ -39,17 +40,20 @@ public class VehicleJoint : MonoBehaviour
     void connect()
     {
         anchor = trackController.getClosestAnchor(car);
-        joint = vehicle.AddComponent<SpringJoint>();
-        joint.autoConfigureConnectedAnchor = false;
+        joint = anchor.GetRigidbody().AddComponent<HingeJoint>();
+        joint.autoConfigureConnectedAnchor = true;
+        joint.axis = Vector3.up;
         float distanceToJoint = Vector3.Distance(vehicle.transform.position, anchor.transform.position);
 
-        joint.minDistance = distanceToJoint - (width / 2.0f);
-        joint.maxDistance = distanceToJoint + (width / 2.0f);
+        //joint.minDistance = distanceToJoint - (width / 2.0f);
+        //joint.maxDistance = distanceToJoint + (width / 2.0f);
 
-        joint.connectedBody = anchor.GetRigidbody();
-        joint.connectedAnchor = car.transform.position;
+        //Debug.Log($"distance: {distanceToJoint}, mindistance: {joint.minDistance}, max: {joint.maxDistance}");
 
-        joint.spring = strength;
+        joint.connectedBody = vehicle;
+        //joint.connectedAnchor = car.transform.position;
+
+        //joint.spring = strength;
 
         Debug.Log("connected");
     }

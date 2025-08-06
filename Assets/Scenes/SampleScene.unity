@@ -1601,7 +1601,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!136 &483587835
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -1983,6 +1983,7 @@ MonoBehaviour:
   vehicle: {fileID: 545846158}
   width: 5
   strength: 10
+  debugHold: 0
   anchor: {fileID: 0}
   joint: {fileID: 0}
   trackController: {fileID: 890297698}
@@ -4355,7 +4356,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!136 &1454532354
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -5045,7 +5046,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!136 &1825350241
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -5458,7 +5459,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!136 &1943694837
 CapsuleCollider:
   m_ObjectHideFlags: 0

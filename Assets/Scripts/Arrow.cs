@@ -20,7 +20,7 @@ public class Arrow : MonoBehaviour
         line.End = start + (normalizedDirection * (length - arrowLength));
 
         Vector3 conePos = start + (normalizedDirection * (length - (arrowLength)));
-        Debug.Log(conePos);
+        //Debug.Log(conePos);
         cone.transform.localPosition = conePos;
         cone.transform.forward = normalizedDirection;
         cone.Length = arrowLength;
